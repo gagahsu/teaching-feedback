@@ -1,0 +1,24 @@
+# Java / Maven
+target/
+*.class
+*.jar
+*.war
+.mvn/
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
+.npm/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Env
+.env
+*.env.local
+
+# Logs
+*.log
