@@ -1,0 +1,53 @@
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(1100px 560px at 82% -12%,rgba(56,189,248,0.09),transparent),#0b1120;">
+  <div style="width:380px;background:#0f1b30;border:1px solid #1e2a44;border-radius:20px;padding:36px;">
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:28px;">
+      <div style="width:44px;height:44px;border-radius:13px;background:linear-gradient(150deg,#38bdf8,#0ea5e9);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:21px;color:#04263a;">教</div>
+      <div>
+        <div style="font-size:18px;font-weight:700;color:#f1f5f9;">每日教學回饋</div>
+        <div style="font-size:12.5px;color:#64748b;">資料結構與演算法 &middot; 進階班</div>
+      </div>
+    </div>
+
+    <!-- mode toggle -->
+    <div style="display:flex;gap:4px;background:#0b1424;border:1px solid #1e2a44;border-radius:12px;padding:4px;margin-bottom:24px;">
+      <button (click)="mode='login'"
+        [style.background]="mode==='login'?'#38bdf8':'transparent'"
+        [style.color]="mode==='login'?'#04263a':'#94a3b8'"
+        style="flex:1;padding:8px;border-radius:9px;border:none;cursor:pointer;font-size:13.5px;font-weight:600;font-family:inherit;">登入</button>
+      <button (click)="mode='register'"
+        [style.background]="mode==='register'?'#38bdf8':'transparent'"
+        [style.color]="mode==='register'?'#04263a':'#94a3b8'"
+        style="flex:1;padding:8px;border-radius:9px;border:none;cursor:pointer;font-size:13.5px;font-weight:600;font-family:inherit;">註冊</button>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div>
+        <label style="display:block;font-size:12px;color:#64748b;margin-bottom:7px;">姓名</label>
+        <input [(ngModel)]="name" placeholder="輸入你的姓名" class="tfb-input">
+      </div>
+      <div>
+        <label style="display:block;font-size:12px;color:#64748b;margin-bottom:7px;">密碼</label>
+        <input [(ngModel)]="password" type="password" placeholder="輸入密碼" class="tfb-input">
+      </div>
+      <div *ngIf="mode==='register'">
+        <label style="display:block;font-size:12px;color:#64748b;margin-bottom:7px;">身分</label>
+        <div style="display:flex;gap:8px;">
+          <button (click)="role='STUDENT'"
+            [style.background]="role==='STUDENT'?'rgba(56,189,248,0.16)':'transparent'"
+            [style.borderColor]="role==='STUDENT'?'rgba(125,211,252,0.5)':'#2a3a55'"
+            style="flex:1;padding:9px;border:1px solid;border-radius:10px;cursor:pointer;color:#94a3b8;font-size:13px;font-family:inherit;">學生</button>
+          <button (click)="role='TEACHER'"
+            [style.background]="role==='TEACHER'?'rgba(56,189,248,0.16)':'transparent'"
+            [style.borderColor]="role==='TEACHER'?'rgba(125,211,252,0.5)':'#2a3a55'"
+            style="flex:1;padding:9px;border:1px solid;border-radius:10px;cursor:pointer;color:#94a3b8;font-size:13px;font-family:inherit;">老師</button>
+        </div>
+      </div>
+      <div *ngIf="error" style="font-size:12.5px;color:#fb7185;background:rgba(251,113,133,0.1);border-radius:9px;padding:9px 13px;">{{error}}</div>
+      <button (click)="submit()" [disabled]="loading" class="btn-primary" style="width:100%;padding:11px;font-size:14px;">
+        {{loading ? '處理中…' : (mode==='login' ? '登入' : '註冊')}}
+      </button>
+    </div>
+
+  </div>
+</div>

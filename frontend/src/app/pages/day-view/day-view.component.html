@@ -1,0 +1,148 @@
+<div style="min-height:100vh;background:radial-gradient(1100px 560px at 82% -12%,rgba(56,189,248,0.09),transparent),#0b1120;padding:28px 24px 64px;">
+<div style="max-width:1180px;margin:0 auto;">
+
+  <button (click)="router.navigate(['/calendar'])" class="btn-ghost" style="font-size:13px;">&lsaquo; 返回行事暦</button>
+
+  <div style="display:flex;align-items:flex-end;gap:14px;margin:16px 0 24px;flex-wrap:wrap;">
+    <div style="font-size:30px;font-weight:800;color:#f1f5f9;line-height:1;">{{dayTitle}}</div>
+    <div style="font-size:15px;color:#64748b;padding-bottom:3px;">{{dayWeekday}}</div>
+    <span *ngIf="isToday" style="font-size:11.5px;font-weight:700;color:#38bdf8;background:rgba(56,189,248,0.14);border:1px solid rgba(56,189,248,0.4);border-radius:999px;padding:3px 11px;margin-bottom:4px;">今天</span>
+  </div>
+
+  <div style="display:grid;grid-template-columns:minmax(0,0.92fr) minmax(0,1.08fr);gap:22px;align-items:start;">
+
+    <!-- Course Panel -->
+    <div style="background:#0f1b30;border:1px solid #1e2a44;border-radius:18px;padding:24px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div style="font-size:11.5px;font-weight:700;letter-spacing:.1em;color:#38bdf8;">課程內容</div>
+        <button *ngIf="auth.isTeacher && !isEditing && course?.title"
+          (click)="startEdit()" class="edit-btn">編輯</button>
+      </div>
+
+      <!-- Edit form -->
+      <div *ngIf="isEditing" style="display:flex;flex-direction:column;gap:15px;">
+        <div>
+          <label style="display:block;font-size:12px;color:#64748b;margin-bottom:7px;">課程主題</label>
+          <input [(ngModel)]="editTitle" placeholder="輸入今日課程主題…" class="tfb-input">
+        </div>
+        <div>
+          <label style="display:block;font-size:12px;color:#64748b;margin-bottom:7px;">課程說明（選填）</label>
+          <textarea [(ngModel)]="editContent" placeholder="今天會教什麼、課後作業、注意事項…" class="tfb-textarea" style="min-height:150px;"></textarea>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;">
+          <button (click)="cancelEdit()" class="btn-ghost">取消</button>
+          <button (click)="saveCourse()" class="btn-primary">儲存</button>
+        </div>
+      </div>
+
+      <!-- Course display -->
+      <div *ngIf="!isEditing">
+        <ng-container *ngIf="course?.title; else noCourse">
+          <div style="font-size:22px;font-weight:700;color:#f1f5f9;line-height:1.45;margin-bottom:14px;">{{course?.title}}</div>
+          <div *ngIf="course?.content" style="font-size:14.5px;line-height:1.8;color:#94a3b8;white-space:pre-wrap;">{{course?.content}}</div>
+        </ng-container>
+        <ng-template #noCourse>
+          <div style="text-align:center;padding:34px 10px;">
+            <div style="color:#475569;font-size:14px;margin-bottom:16px;">這一天還沒有安排課程內容</div>
+            <button *ngIf="auth.isTeacher" (click)="startEdit()" class="btn-primary">＋ 新增課程內容</button>
+            <div *ngIf="!auth.isTeacher" style="font-size:12.5px;color:#3b4a63;">老師尚未安排此日課程</div>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- Feedback Panel -->
+    <div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:13px;">
+        <div style="font-size:15px;font-weight:700;color:#f1f5f9;">課程回饋</div>
+        <span style="font-size:12.5px;color:#64748b;">{{messages.length}} 則</span>
+      </div>
+
+      <!-- Filter pills -->
+      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:15px;">
+        <button (click)="filterType='all'"
+          [style]="filterType==='all' ? 'padding:5px 12px;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;border:1px solid rgba(125,211,252,0.5);background:rgba(56,189,248,0.16);color:#7dd3fc;' : 'padding:5px 12px;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;border:1px solid #2a3a55;background:transparent;color:#94a3b8;'">全部 {{messages.length}}</button>
+        <button *ngIf="openHelpCount > 0" (click)="filterType='open_help'"
+          [style]="filterType==='open_help' ? 'padding:5px 12px;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;border:1px solid rgba(251,113,133,0.6);background:rgba(251,113,133,0.2);color:#fecdd3;' : 'padding:5px 12px;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;border:1px solid rgba(251,113,133,0.35);background:rgba(251,113,133,0.08);color:#fb7185;'">待回覆求救 {{openHelpCount}}</button>
+        <ng-container *ngFor="let t of TYPE_ORDER">
+          <button *ngIf="typeCounts[t]" (click)="filterType=t"
+            [style]="filterType===t ? 'padding:5px 12px;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;border:1px solid rgba(125,211,252,0.5);background:rgba(56,189,248,0.16);color:#7dd3fc;' : 'padding:5px 12px;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;border:1px solid #2a3a55;background:transparent;color:#94a3b8;'">{{TYPES[t].label}} {{typeCounts[t]}}</button>
+        </ng-container>
+      </div>
+
+      <!-- Message list -->
+      <div style="display:flex;flex-direction:column;gap:11px;margin-bottom:18px;">
+        <div *ngFor="let m of filteredMessages" [style]="cardStyle(m)">
+          <div style="display:flex;gap:13px;">
+            <div [style]="avatarStyle(m.authorRole)">{{m.authorName[0]}}</div>
+            <div style="flex:1;min-width:0;">
+              <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:7px;">
+                <span style="font-size:13.5px;font-weight:700;color:#e2e8f0;">{{m.authorName}}</span>
+                <span [style]="m.authorRole==='TEACHER' ? 'font-size:11px;font-weight:700;color:#38bdf8;background:rgba(56,189,248,0.12);padding:1px 8px;border-radius:6px;' : 'font-size:11px;font-weight:600;color:#64748b;background:rgba(100,116,139,0.14);padding:1px 8px;border-radius:6px;'">{{m.authorRole==='TEACHER' ? '老師' : '學生'}}</span>
+                <span [style]="'display:inline-block;padding:2px 9px;border-radius:999px;font-size:11.5px;font-weight:700;background:'+TYPES[m.type].bg+';color:'+TYPES[m.type].color+';'">{{TYPES[m.type].label}}</span>
+                <ng-container *ngIf="m.type==='help'">
+                  <span [style]="m.resolved ? 'font-size:11px;font-weight:700;color:#34d399;background:rgba(52,211,153,0.14);padding:1px 9px;border-radius:6px;' : 'font-size:11px;font-weight:700;color:#fb7185;background:rgba(251,113,133,0.16);padding:1px 9px;border-radius:6px;'">{{m.resolved ? '✓ 已解決' : '待回覆'}}</span>
+                </ng-container>
+                <span style="font-size:11.5px;color:#475569;margin-left:auto;">{{m.createdAt | date:'HH:mm'}}</span>
+              </div>
+              <div style="font-size:14px;line-height:1.65;color:#cbd5e1;white-space:pre-wrap;">{{m.text}}</div>
+
+              <!-- Replies -->
+              <div *ngIf="m.replies?.length" style="margin-top:12px;display:flex;flex-direction:column;gap:11px;border-left:2px solid #1e2a44;padding-left:14px;">
+                <div *ngFor="let rep of m.replies" style="display:flex;gap:10px;">
+                  <div [style]="avatarStyle(rep.authorRole, true)">{{rep.authorName[0]}}</div>
+                  <div style="flex:1;min-width:0;">
+                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;">
+                      <span style="font-size:12.5px;font-weight:700;color:#e2e8f0;">{{rep.authorName}}</span>
+                      <span [style]="rep.authorRole==='TEACHER' ? 'font-size:10.5px;font-weight:700;color:#38bdf8;background:rgba(56,189,248,0.12);padding:1px 7px;border-radius:5px;' : 'font-size:10.5px;font-weight:600;color:#64748b;background:rgba(100,116,139,0.14);padding:1px 7px;border-radius:5px;'">{{rep.authorRole==='TEACHER' ? '老師' : '學生'}}</span>
+                      <span style="font-size:11px;color:#475569;margin-left:auto;">{{rep.createdAt | date:'HH:mm'}}</span>
+                    </div>
+                    <div style="font-size:13.5px;line-height:1.6;color:#cbd5e1;white-space:pre-wrap;">{{rep.text}}</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Actions -->
+              <div style="display:flex;gap:8px;margin-top:11px;flex-wrap:wrap;">
+                <button (click)="startReply(m.id)" class="btn-ghost" style="padding:5px 13px;font-size:12px;border-radius:8px;">回覆</button>
+                <button *ngIf="auth.isTeacher && m.type==='help'"
+                  (click)="toggleResolve(m)"
+                  [style]="m.resolved ? 'background:transparent;border:1px solid #2a3a55;color:#94a3b8;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;' : 'background:transparent;border:1px solid rgba(52,211,153,0.5);color:#34d399;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;'">{{m.resolved ? '改為待回覆' : '標記已解決'}}</button>
+              </div>
+
+              <!-- Reply box -->
+              <div *ngIf="replyingTo === m.id" style="margin-top:11px;display:flex;flex-direction:column;gap:9px;">
+                <textarea [(ngModel)]="replyDraft" [placeholder]="auth.isTeacher ? '回覆這則訊息…（全班可見）' : '回覆…'" class="tfb-textarea" style="min-height:62px;"></textarea>
+                <div style="display:flex;gap:8px;justify-content:flex-end;">
+                  <button (click)="cancelReply()" class="btn-ghost" style="padding:7px 15px;font-size:12.5px;border-radius:9px;">取消</button>
+                  <button (click)="submitReply(m.id)" class="btn-primary" style="padding:7px 17px;font-size:12.5px;border-radius:9px;">送出回覆</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="filteredMessages.length === 0"
+          style="text-align:center;padding:26px;color:#475569;font-size:13.5px;background:#0f1b30;border:1px dashed #1e2a44;border-radius:14px;">
+          {{messages.length === 0 ? '還沒有任何回饋，成為第一個留言的人吧' : '此分類目前沒有訊息'}}
+        </div>
+      </div>
+
+      <!-- Composer -->
+      <div style="background:#0f1b30;border:1px solid #1e2a44;border-radius:16px;padding:16px;">
+        <div style="font-size:12.5px;font-weight:600;color:#94a3b8;margin-bottom:11px;">{{auth.isTeacher ? '以老師身分回覆 / 公告' : '分享你的回饋'}}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+          <button *ngFor="let t of TYPE_ORDER" (click)="selectedType=t"
+            [style]="selectedType===t ? 'padding:6px 14px;border-radius:999px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;background:'+TYPES[t].bg+';color:'+TYPES[t].color+';border:1px solid '+TYPES[t].border+';' : 'padding:6px 14px;border-radius:999px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;background:transparent;color:#94a3b8;border:1px solid #2a3a55;'">{{TYPES[t].label}}</button>
+        </div>
+        <textarea [(ngModel)]="draft" [placeholder]="auth.isTeacher ? '回覆學生問題，或發佈今日公告…' : '留言、提出建議、求救，或分享你的心得…'" class="tfb-textarea" style="min-height:80px;"></textarea>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;gap:12px;">
+          <span style="font-size:11.5px;color:#475569;">選擇類型後送出，全班都看得到</span>
+          <button (click)="postMessage()" class="btn-primary">送出回饋</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
