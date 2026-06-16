@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS courses (
     id         BIGSERIAL PRIMARY KEY,
-    date       DATE         NOT NULL UNIQUE,
+    date       DATE         NOT NULL,
     title      VARCHAR(255),
     content    TEXT,
     updated_at TIMESTAMPTZ  DEFAULT NOW()

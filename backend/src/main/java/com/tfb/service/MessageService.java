@@ -25,23 +25,21 @@ public class MessageService {
 
     @Transactional(readOnly = true)
     public List<MessageResponse> getMessages(LocalDate date) {
-        return courseRepo.findByDate(date)
-                .map(course -> msgRepo.findByCourseWithUser(course)
-                        .stream()
-                        .map(m -> {
-                            List<ReplyResponse> replies = replyRepo
-                                    .findByMessageWithUser(m)
-                                    .stream()
-                                    .map(ReplyResponse::from)
-                                    .collect(Collectors.toList());
-                            return MessageResponse.from(m, replies);
-                        })
-                        .collect(Collectors.toList()))
-                .orElse(List.of());
+        return courseRepo.findAllByDateOrderByIdAsc(date).stream()
+                .flatMap(course -> msgRepo.findByCourseWithUser(course).stream())
+                .map(m -> {
+                    List<ReplyResponse> replies = replyRepo
+                            .findByMessageWithUser(m)
+                            .stream()
+                            .map(ReplyResponse::from)
+                            .collect(Collectors.toList());
+                    return MessageResponse.from(m, replies);
+                })
+                .collect(Collectors.toList());
     }
 
     public MessageResponse postMessage(LocalDate date, String username, MessageRequest req) {
-        Course course = courseRepo.findByDate(date).orElseGet(() -> {
+        Course course = courseRepo.findFirstByDateOrderByIdAsc(date).orElseGet(() -> {
             Course c = new Course();
             c.setDate(date);
             return courseRepo.save(c);

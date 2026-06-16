@@ -15,19 +15,20 @@
     <div style="background:#0f1b30;border:1px solid #1e2a44;border-radius:18px;padding:24px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
         <div style="font-size:11.5px;font-weight:700;letter-spacing:.1em;color:#38bdf8;">課程內容</div>
-        <button *ngIf="auth.isTeacher && !isEditing && course?.title"
-          (click)="startEdit()" class="edit-btn">編輯</button>
+        <button *ngIf="auth.isTeacher && !isAddingCourse"
+          (click)="startAdd()" class="btn-primary" style="padding:6px 14px;font-size:12px;border-radius:8px;">＋ 新增主題</button>
       </div>
 
-      <!-- Edit form -->
-      <div *ngIf="isEditing" style="display:flex;flex-direction:column;gap:15px;">
+      <!-- Add / Edit form -->
+      <div *ngIf="isAddingCourse" style="display:flex;flex-direction:column;gap:15px;margin-bottom:16px;border:1px solid #1e3a55;border-radius:12px;padding:16px;background:rgba(14,23,38,0.6);">
+        <div style="font-size:12.5px;font-weight:600;color:#64748b;">{{editingId !== null ? '編輯課程主題' : '新增課程主題'}}</div>
         <div>
           <label style="display:block;font-size:12px;color:#64748b;margin-bottom:7px;">課程主題</label>
           <input [(ngModel)]="editTitle" placeholder="輸入今日課程主題…" class="tfb-input">
         </div>
         <div>
           <label style="display:block;font-size:12px;color:#64748b;margin-bottom:7px;">課程說明（選填）</label>
-          <textarea [(ngModel)]="editContent" placeholder="今天會教什麼、課後作業、注意事項…" class="tfb-textarea" style="min-height:150px;"></textarea>
+          <textarea [(ngModel)]="editContent" placeholder="今天會教什麼、課後作業、注意事項…" class="tfb-textarea" style="min-height:100px;"></textarea>
         </div>
         <div style="display:flex;gap:10px;justify-content:flex-end;">
           <button (click)="cancelEdit()" class="btn-ghost">取消</button>
@@ -35,20 +36,33 @@
         </div>
       </div>
 
-      <!-- Course display -->
-      <div *ngIf="!isEditing">
-        <ng-container *ngIf="course?.title; else noCourse">
-          <div style="font-size:22px;font-weight:700;color:#f1f5f9;line-height:1.45;margin-bottom:14px;">{{course?.title}}</div>
-          <div *ngIf="course?.content" style="font-size:14.5px;line-height:1.8;color:#94a3b8;white-space:pre-wrap;">{{course?.content}}</div>
-        </ng-container>
-        <ng-template #noCourse>
-          <div style="text-align:center;padding:34px 10px;">
-            <div style="color:#475569;font-size:14px;margin-bottom:16px;">這一天還沒有安排課程內容</div>
-            <button *ngIf="auth.isTeacher" (click)="startEdit()" class="btn-primary">＋ 新增課程內容</button>
-            <div *ngIf="!auth.isTeacher" style="font-size:12.5px;color:#3b4a63;">老師尚未安排此日課程</div>
+      <!-- Course list -->
+      <ng-container *ngIf="courses.length > 0; else noCourse">
+        <div *ngFor="let c of courses; let i = index"
+          style="background:#0b1422;border:1px solid #1e2a44;border-radius:12px;padding:16px;margin-bottom:12px;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+            <div style="flex:1;min-width:0;">
+              <div style="display:flex;align-items:center;gap:9px;margin-bottom:8px;">
+                <span style="width:20px;height:20px;border-radius:6px;background:rgba(56,189,248,0.15);color:#38bdf8;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">{{i+1}}</span>
+                <div style="font-size:18px;font-weight:700;color:#f1f5f9;line-height:1.35;">{{c.title}}</div>
+              </div>
+              <div *ngIf="c.content" style="font-size:14px;line-height:1.8;color:#94a3b8;white-space:pre-wrap;padding-left:29px;">{{c.content}}</div>
+            </div>
+            <div *ngIf="auth.isTeacher && !isAddingCourse" style="display:flex;gap:6px;flex-shrink:0;">
+              <button (click)="startEditCourse(c)" class="edit-btn">編輯</button>
+              <button (click)="deleteCourse(c.id)"
+                style="background:transparent;border:1px solid rgba(251,113,133,0.4);color:#fb7185;border-radius:8px;padding:5px 11px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">刪除</button>
+            </div>
           </div>
-        </ng-template>
-      </div>
+        </div>
+      </ng-container>
+      <ng-template #noCourse>
+        <div *ngIf="!isAddingCourse" style="text-align:center;padding:34px 10px;">
+          <div style="color:#475569;font-size:14px;margin-bottom:16px;">這一天還沒有安排課程內容</div>
+          <button *ngIf="auth.isTeacher" (click)="startAdd()" class="btn-primary">＋ 新增課程內容</button>
+          <div *ngIf="!auth.isTeacher" style="font-size:12.5px;color:#3b4a63;">老師尚未安排此日課程</div>
+        </div>
+      </ng-template>
     </div>
 
     <!-- Feedback Panel -->
