@@ -29,7 +29,7 @@ export class DayViewComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
+    public router: Router,
     public auth: AuthService,
     private courseService: CourseService,
     private messageService: MessageService
