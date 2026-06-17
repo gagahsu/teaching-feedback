@@ -6,7 +6,7 @@ export interface Course {
 }
 
 export interface CalendarDay {
-  title: string;
+  titles: string[];
   msgCount: number;
   helpCount: number;
 }

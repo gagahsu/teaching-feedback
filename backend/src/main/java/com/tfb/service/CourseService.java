@@ -23,13 +23,19 @@ public class CourseService {
     public Map<String, Object> getCalendar(int year, int month) {
         YearMonth ym = YearMonth.of(year, month);
         List<Course> courses = courseRepo.findByDateBetweenOrderByDateAscIdAsc(ym.atDay(1), ym.atEndOfMonth());
+        Map<LocalDate, List<String>> titlesByDate = new LinkedHashMap<>();
+        courses.forEach(c -> {
+            if (c.getTitle() != null && !c.getTitle().isBlank()) {
+                titlesByDate.computeIfAbsent(c.getDate(), d -> new ArrayList<>()).add(c.getTitle());
+            } else {
+                titlesByDate.computeIfAbsent(c.getDate(), d -> new ArrayList<>());
+            }
+        });
         Map<String, Object> result = new LinkedHashMap<>();
-        Map<LocalDate, String> firstTitleByDate = new LinkedHashMap<>();
-        courses.forEach(c -> firstTitleByDate.putIfAbsent(c.getDate(), c.getTitle() != null ? c.getTitle() : ""));
-        firstTitleByDate.forEach((date, title) -> {
+        titlesByDate.forEach((date, titles) -> {
             long msgCount  = msgRepo.countByDate(date);
             long helpCount = msgRepo.countOpenHelpByDate(date);
-            result.put(date.toString(), Map.of("title", title, "msgCount", msgCount, "helpCount", helpCount));
+            result.put(date.toString(), Map.of("titles", titles, "msgCount", msgCount, "helpCount", helpCount));
         });
         return result;
     }
