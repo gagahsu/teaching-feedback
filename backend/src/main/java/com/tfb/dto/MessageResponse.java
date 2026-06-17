@@ -15,6 +15,7 @@ public class MessageResponse {
     private boolean resolved;
     @JsonProperty("isPrivate")
     private boolean isPrivate;
+    private String taggedTopicTitle;
     private LocalDateTime createdAt;
     private String authorName;
     private String authorRole;
@@ -27,6 +28,7 @@ public class MessageResponse {
         r.text = m.getText();
         r.resolved = m.isResolved();
         r.isPrivate = m.isPrivate();
+        r.taggedTopicTitle = m.getTaggedCourse() != null ? m.getTaggedCourse().getTitle() : null;
         r.createdAt = m.getCreatedAt();
         r.authorName = m.getUser().getName();
         r.authorRole = m.getUser().getRole().name();

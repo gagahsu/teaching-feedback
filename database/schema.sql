@@ -20,9 +20,10 @@ CREATE TABLE IF NOT EXISTS messages (
     user_id    BIGINT       NOT NULL REFERENCES users(id),
     type       VARCHAR(20)  NOT NULL CHECK (type IN ('general','suggestion','help','like','done')),
     text       TEXT         NOT NULL,
-    resolved   BOOLEAN      NOT NULL DEFAULT FALSE,
-    is_private BOOLEAN      NOT NULL DEFAULT FALSE,
-    created_at TIMESTAMPTZ  DEFAULT NOW()
+    resolved          BOOLEAN      NOT NULL DEFAULT FALSE,
+    is_private        BOOLEAN      NOT NULL DEFAULT FALSE,
+    tagged_course_id  BIGINT       REFERENCES courses(id) ON DELETE SET NULL,
+    created_at        TIMESTAMPTZ  DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS replies (

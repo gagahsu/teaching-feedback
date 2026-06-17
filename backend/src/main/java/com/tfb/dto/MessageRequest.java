@@ -9,4 +9,5 @@ public class MessageRequest {
     private String text;
     @JsonProperty("isPrivate")
     private boolean isPrivate = false;
+    private Long taggedCourseId;
 }

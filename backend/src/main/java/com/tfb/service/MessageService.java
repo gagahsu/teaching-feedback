@@ -55,6 +55,9 @@ public class MessageService {
         m.setType(Message.MessageType.valueOf(req.getType()));
         m.setText(req.getText());
         m.setPrivate(req.isPrivate());
+        if (req.getTaggedCourseId() != null) {
+            courseRepo.findById(req.getTaggedCourseId()).ifPresent(m::setTaggedCourse);
+        }
         msgRepo.save(m);
         return MessageResponse.from(m, List.of());
     }

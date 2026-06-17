@@ -24,6 +24,9 @@ export class DayViewComponent implements OnInit {
   selectedType: MessageType = 'general';
   draft = '';
   isPrivate = false;
+  taggedCourseId: number | null = null;
+  taggedTopicTitle = '';
+  showTopicPicker = false;
   replyingTo: number | null = null;
   replyDraft = '';
 
@@ -117,12 +120,20 @@ export class DayViewComponent implements OnInit {
     return sz + col + 'flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:\'Space Grotesk\',sans-serif;font-weight:700;';
   }
 
+  selectTopic(c: { id: number; title: string }) {
+    this.taggedCourseId = c.id;
+    this.taggedTopicTitle = c.title;
+    this.showTopicPicker = false;
+  }
+  clearTopic() { this.taggedCourseId = null; this.taggedTopicTitle = ''; }
+
   postMessage() {
     const text = this.draft.trim();
     if (!text) return;
-    this.messageService.postMessage(this.date, this.selectedType, text, this.isPrivate).subscribe(m => {
+    this.messageService.postMessage(this.date, this.selectedType, text, this.isPrivate, this.taggedCourseId).subscribe(m => {
       this.messages = [...this.messages, m];
       this.draft = ''; this.selectedType = 'general'; this.isPrivate = false;
+      this.taggedCourseId = null; this.taggedTopicTitle = ''; this.showTopicPicker = false;
     });
   }
   toggleResolve(m: Message) {

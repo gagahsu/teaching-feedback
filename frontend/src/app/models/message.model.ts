@@ -14,6 +14,7 @@ export interface Message {
   text: string;
   resolved: boolean;
   isPrivate: boolean;
+  taggedTopicTitle?: string;
   createdAt: string;
   authorName: string;
   authorRole: string;

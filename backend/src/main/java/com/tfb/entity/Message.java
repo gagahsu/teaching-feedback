@@ -36,6 +36,10 @@ public class Message {
     @Column(name = "is_private", nullable = false)
     private boolean isPrivate = false;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tagged_course_id")
+    private Course taggedCourse;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
