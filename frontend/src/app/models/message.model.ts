@@ -13,6 +13,7 @@ export interface Message {
   type: MessageType;
   text: string;
   resolved: boolean;
+  isPrivate: boolean;
   createdAt: string;
   authorName: string;
   authorRole: string;

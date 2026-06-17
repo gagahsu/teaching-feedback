@@ -14,8 +14,8 @@ export class MessageService {
     return this.http.get<Message[]>(`${this.url}/${date}`);
   }
 
-  postMessage(date: string, type: MessageType, text: string): Observable<Message> {
-    return this.http.post<Message>(`${this.url}/${date}`, { type, text });
+  postMessage(date: string, type: MessageType, text: string, isPrivate = false): Observable<Message> {
+    return this.http.post<Message>(`${this.url}/${date}`, { type, text, isPrivate });
   }
 
   postReply(msgId: number, text: string): Observable<Reply> {

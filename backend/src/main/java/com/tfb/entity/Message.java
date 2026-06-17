@@ -33,6 +33,9 @@ public class Message {
 
     private boolean resolved = false;
 
+    @Column(name = "is_private", nullable = false)
+    private boolean isPrivate = false;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 

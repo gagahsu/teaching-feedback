@@ -12,15 +12,18 @@ const WD = ['星期日','星期一','星期二','星期三','星期四','星期�
 export class DayViewComponent implements OnInit {
   date = '';
   today = this.fmt(new Date());
-  course: Course | null = null;
+  courses: Course[] = [];
   messages: Message[] = [];
 
-  isEditing = false;
-  editTitle = ''; editContent = '';
+  isAddingCourse = false;
+  editingId: number | null = null;
+  editTitle = '';
+  editContent = '';
 
   filterType = 'all';
   selectedType: MessageType = 'general';
   draft = '';
+  isPrivate = false;
   replyingTo: number | null = null;
   replyDraft = '';
 
@@ -37,14 +40,14 @@ export class DayViewComponent implements OnInit {
 
   ngOnInit() {
     this.date = this.route.snapshot.paramMap.get('date') ?? '';
-    this.loadCourse();
+    this.loadCourses();
     this.loadMessages();
   }
 
-  loadCourse() {
-    this.courseService.getCourse(this.date).subscribe({
-      next: c => this.course = c,
-      error: () => this.course = null
+  loadCourses() {
+    this.courseService.getCourses(this.date).subscribe({
+      next: cs => this.courses = cs,
+      error: () => this.courses = []
     });
   }
   loadMessages() {
@@ -52,15 +55,41 @@ export class DayViewComponent implements OnInit {
   }
 
   // --- course ---
-  startEdit() {
-    this.editTitle = this.course?.title ?? '';
-    this.editContent = this.course?.content ?? '';
-    this.isEditing = true;
+  startAdd() {
+    this.editingId = null;
+    this.editTitle = '';
+    this.editContent = '';
+    this.isAddingCourse = true;
   }
-  cancelEdit() { this.isEditing = false; }
+  startEditCourse(c: Course) {
+    this.editingId = c.id;
+    this.editTitle = c.title ?? '';
+    this.editContent = c.content ?? '';
+    this.isAddingCourse = true;
+  }
+  cancelEdit() {
+    this.isAddingCourse = false;
+    this.editingId = null;
+  }
   saveCourse() {
-    this.courseService.saveCourse(this.date, this.editTitle, this.editContent).subscribe(c => {
-      this.course = c; this.isEditing = false;
+    if (this.editingId !== null) {
+      this.courseService.updateCourse(this.date, this.editingId, this.editTitle, this.editContent)
+        .subscribe(c => {
+          this.courses = this.courses.map(x => x.id === c.id ? c : x);
+          this.isAddingCourse = false;
+          this.editingId = null;
+        });
+    } else {
+      this.courseService.addCourse(this.date, this.editTitle, this.editContent)
+        .subscribe(c => {
+          this.courses = [...this.courses, c];
+          this.isAddingCourse = false;
+        });
+    }
+  }
+  deleteCourse(id: number) {
+    this.courseService.deleteCourse(this.date, id).subscribe(() => {
+      this.courses = this.courses.filter(c => c.id !== id);
     });
   }
 
@@ -91,9 +120,9 @@ export class DayViewComponent implements OnInit {
   postMessage() {
     const text = this.draft.trim();
     if (!text) return;
-    this.messageService.postMessage(this.date, this.selectedType, text).subscribe(m => {
+    this.messageService.postMessage(this.date, this.selectedType, text, this.isPrivate).subscribe(m => {
       this.messages = [...this.messages, m];
-      this.draft = ''; this.selectedType = 'general';
+      this.draft = ''; this.selectedType = 'general'; this.isPrivate = false;
     });
   }
   toggleResolve(m: Message) {

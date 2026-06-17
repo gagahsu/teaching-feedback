@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CourseRepository extends JpaRepository<Course, Long> {
-    Optional<Course> findByDate(LocalDate date);
-    List<Course> findByDateBetweenOrderByDateAsc(LocalDate start, LocalDate end);
+    Optional<Course> findFirstByDateOrderByIdAsc(LocalDate date);
+    List<Course> findAllByDateOrderByIdAsc(LocalDate date);
+    List<Course> findByDateBetweenOrderByDateAscIdAsc(LocalDate start, LocalDate end);
 }

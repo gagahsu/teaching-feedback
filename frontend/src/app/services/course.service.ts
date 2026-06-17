@@ -16,11 +16,19 @@ export class CourseService {
     });
   }
 
-  getCourse(date: string): Observable<Course> {
-    return this.http.get<Course>(`${this.url}/courses/${date}`);
+  getCourses(date: string): Observable<Course[]> {
+    return this.http.get<Course[]>(`${this.url}/courses/${date}`);
   }
 
-  saveCourse(date: string, title: string, content: string): Observable<Course> {
-    return this.http.put<Course>(`${this.url}/courses/${date}`, { title, content });
+  addCourse(date: string, title: string, content: string): Observable<Course> {
+    return this.http.post<Course>(`${this.url}/courses/${date}`, { title, content });
+  }
+
+  updateCourse(date: string, id: number, title: string, content: string): Observable<Course> {
+    return this.http.put<Course>(`${this.url}/courses/${date}/${id}`, { title, content });
+  }
+
+  deleteCourse(date: string, id: number): Observable<void> {
+    return this.http.delete<void>(`${this.url}/courses/${date}/${id}`);
   }
 }
