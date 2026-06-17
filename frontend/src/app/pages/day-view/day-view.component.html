@@ -50,8 +50,7 @@
             </div>
             <div *ngIf="auth.isTeacher && !isAddingCourse" style="display:flex;gap:6px;flex-shrink:0;">
               <button (click)="startEditCourse(c)" class="edit-btn">編輯</button>
-              <button (click)="deleteCourse(c.id)"
-                style="background:transparent;border:1px solid rgba(251,113,133,0.4);color:#fb7185;border-radius:8px;padding:5px 11px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">刪除</button>
+              <button (click)="deleteCourse(c.id)" class="delete-btn">刪除</button>
             </div>
           </div>
         </div>

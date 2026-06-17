@@ -30,3 +30,15 @@ html, body { height: 100%; background: #0b1120; color: #e2e8f0; font-family: 'No
   font-size: 13.5px; font-weight: 600; font-family: inherit;
 }
 .btn-ghost:hover { border-color: #475569; }
+.edit-btn {
+  background: transparent; border: 1px solid #2a3a55; color: #94a3b8;
+  border-radius: 8px; padding: 5px 11px; cursor: pointer;
+  font-size: 12px; font-weight: 600; font-family: inherit;
+}
+.edit-btn:hover { border-color: #38bdf8; color: #38bdf8; }
+.delete-btn {
+  background: transparent; border: 1px solid rgba(251,113,133,0.4); color: #fb7185;
+  border-radius: 8px; padding: 5px 11px; cursor: pointer;
+  font-size: 12px; font-weight: 600; font-family: inherit;
+}
+.delete-btn:hover { border-color: #fb7185; background: rgba(251,113,133,0.08); }
