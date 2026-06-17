@@ -24,9 +24,13 @@ public class MessageService {
     private final UserRepository userRepo;
 
     @Transactional(readOnly = true)
-    public List<MessageResponse> getMessages(LocalDate date) {
+    public List<MessageResponse> getMessages(LocalDate date, String username) {
+        User viewer = userRepo.findByName(username).orElseThrow();
+        boolean isTeacher = viewer.getRole() == User.Role.TEACHER;
         return courseRepo.findAllByDateOrderByIdAsc(date).stream()
                 .flatMap(course -> msgRepo.findByCourseWithUser(course).stream())
+                // 不公開留言只有老師或留言者本人看得到
+                .filter(m -> !m.isPrivate() || isTeacher || m.getUser().getId().equals(viewer.getId()))
                 .map(m -> {
                     List<ReplyResponse> replies = replyRepo
                             .findByMessageWithUser(m)
@@ -50,6 +54,7 @@ public class MessageService {
         m.setUser(user);
         m.setType(Message.MessageType.valueOf(req.getType()));
         m.setText(req.getText());
+        m.setPrivate(req.isPrivate());
         msgRepo.save(m);
         return MessageResponse.from(m, List.of());
     }

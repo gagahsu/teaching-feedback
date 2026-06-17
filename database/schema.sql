@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS messages (
     type       VARCHAR(20)  NOT NULL CHECK (type IN ('general','suggestion','help','like','done')),
     text       TEXT         NOT NULL,
     resolved   BOOLEAN      NOT NULL DEFAULT FALSE,
+    is_private BOOLEAN      NOT NULL DEFAULT FALSE,
     created_at TIMESTAMPTZ  DEFAULT NOW()
 );
 

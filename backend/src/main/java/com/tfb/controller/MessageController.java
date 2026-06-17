@@ -22,8 +22,10 @@ public class MessageController {
     private final MessageService messageService;
 
     @GetMapping("/{date}")
-    public ResponseEntity<List<MessageResponse>> getMessages(@PathVariable String date) {
-        return ResponseEntity.ok(messageService.getMessages(LocalDate.parse(date)));
+    public ResponseEntity<List<MessageResponse>> getMessages(
+            @PathVariable String date,
+            @AuthenticationPrincipal UserDetails user) {
+        return ResponseEntity.ok(messageService.getMessages(LocalDate.parse(date), user.getUsername()));
     }
 
     @PostMapping("/{date}")

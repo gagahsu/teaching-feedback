@@ -97,6 +97,7 @@
                 <ng-container *ngIf="m.type==='help'">
                   <span [style]="m.resolved ? 'font-size:11px;font-weight:700;color:#34d399;background:rgba(52,211,153,0.14);padding:1px 9px;border-radius:6px;' : 'font-size:11px;font-weight:700;color:#fb7185;background:rgba(251,113,133,0.16);padding:1px 9px;border-radius:6px;'">{{m.resolved ? '✓ 已解決' : '待回覆'}}</span>
                 </ng-container>
+                <span *ngIf="m.isPrivate" style="font-size:11px;font-weight:700;color:#fbbf24;background:rgba(251,191,36,0.14);padding:1px 9px;border-radius:6px;">🔒 不公開</span>
                 <span style="font-size:11.5px;color:#475569;margin-left:auto;">{{m.createdAt | date:'HH:mm'}}</span>
               </div>
               <div style="font-size:14px;line-height:1.65;color:#cbd5e1;white-space:pre-wrap;">{{m.text}}</div>
@@ -150,8 +151,18 @@
             [style]="selectedType===t ? 'padding:6px 14px;border-radius:999px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;background:'+TYPES[t].bg+';color:'+TYPES[t].color+';border:1px solid '+TYPES[t].border+';' : 'padding:6px 14px;border-radius:999px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;background:transparent;color:#94a3b8;border:1px solid #2a3a55;'">{{TYPES[t].label}}</button>
         </div>
         <textarea [(ngModel)]="draft" [placeholder]="auth.isTeacher ? '回覆學生問題，或發佈今日公告…' : '留言、提出建議、求救，或分享你的心得…'" class="tfb-textarea" style="min-height:80px;"></textarea>
+
+        <!-- 不公開選項：只有學生可以選 -->
+        <label *ngIf="!auth.isTeacher" (click)="isPrivate = !isPrivate"
+          [style]="isPrivate
+            ? 'display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:7px 13px;border-radius:10px;cursor:pointer;font-size:12.5px;font-weight:600;background:rgba(251,191,36,0.14);border:1px solid rgba(251,191,36,0.5);color:#fbbf24;'
+            : 'display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:7px 13px;border-radius:10px;cursor:pointer;font-size:12.5px;font-weight:600;background:transparent;border:1px solid #2a3a55;color:#94a3b8;'">
+          <span style="font-size:14px;">{{isPrivate ? '🔒' : '🌐'}}</span>
+          {{isPrivate ? '不公開（只有老師看得到）' : '公開（全班可見）'}}
+        </label>
+
         <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;gap:12px;">
-          <span style="font-size:11.5px;color:#475569;">選擇類型後送出，全班都看得到</span>
+          <span style="font-size:11.5px;color:#475569;">{{!auth.isTeacher && isPrivate ? '這則留言只有你和老師看得到' : '選擇類型後送出，全班都看得到'}}</span>
           <button (click)="postMessage()" class="btn-primary">送出回饋</button>
         </div>
       </div>

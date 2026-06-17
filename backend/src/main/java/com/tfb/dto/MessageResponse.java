@@ -1,5 +1,6 @@
 package com.tfb.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tfb.entity.Message;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -12,6 +13,8 @@ public class MessageResponse {
     private String type;
     private String text;
     private boolean resolved;
+    @JsonProperty("isPrivate")
+    private boolean isPrivate;
     private LocalDateTime createdAt;
     private String authorName;
     private String authorRole;
@@ -23,6 +26,7 @@ public class MessageResponse {
         r.type = m.getType().name();
         r.text = m.getText();
         r.resolved = m.isResolved();
+        r.isPrivate = m.isPrivate();
         r.createdAt = m.getCreatedAt();
         r.authorName = m.getUser().getName();
         r.authorRole = m.getUser().getRole().name();

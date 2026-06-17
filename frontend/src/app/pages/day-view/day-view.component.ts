@@ -23,6 +23,7 @@ export class DayViewComponent implements OnInit {
   filterType = 'all';
   selectedType: MessageType = 'general';
   draft = '';
+  isPrivate = false;
   replyingTo: number | null = null;
   replyDraft = '';
 
@@ -119,9 +120,9 @@ export class DayViewComponent implements OnInit {
   postMessage() {
     const text = this.draft.trim();
     if (!text) return;
-    this.messageService.postMessage(this.date, this.selectedType, text).subscribe(m => {
+    this.messageService.postMessage(this.date, this.selectedType, text, this.isPrivate).subscribe(m => {
       this.messages = [...this.messages, m];
-      this.draft = ''; this.selectedType = 'general';
+      this.draft = ''; this.selectedType = 'general'; this.isPrivate = false;
     });
   }
   toggleResolve(m: Message) {
