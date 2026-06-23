@@ -18,4 +18,12 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 
     @Query("SELECT COUNT(m) FROM Message m WHERE m.course.date = :date AND m.type = 'help' AND m.resolved = false")
     long countOpenHelpByDate(@Param("date") LocalDate date);
+
+    // 批次：一次取回整月每天的留言數
+    @Query("SELECT m.course.date, COUNT(m) FROM Message m WHERE m.course.date BETWEEN :start AND :end GROUP BY m.course.date")
+    List<Object[]> countGroupedByDate(@Param("start") LocalDate start, @Param("end") LocalDate end);
+
+    // 批次：一次取回整月每天的未解決求救數
+    @Query("SELECT m.course.date, COUNT(m) FROM Message m WHERE m.course.date BETWEEN :start AND :end AND m.type = 'help' AND m.resolved = false GROUP BY m.course.date")
+    List<Object[]> countOpenHelpGroupedByDate(@Param("start") LocalDate start, @Param("end") LocalDate end);
 }
