@@ -18,7 +18,7 @@ export class CalendarComponent implements OnInit {
   helpDays: { date: string; label: string }[] = [];
   totalHelp = 0;
 
-  constructor(public auth: AuthService, private courseService: CourseService, private router: Router) {}
+  constructor(public auth: AuthService, private courseService: CourseService, public router: Router) {}
 
   ngOnInit() { this.load(); }
 

@@ -10,8 +10,13 @@
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:13px;">
-      <span style="font-size:12.5px;color:#64748b;">{{auth.name}} ({{auth.isTeacher ? '老師' : '學生'}})</span>
-      <button (click)="logout()" style="background:transparent;border:1px solid #1e2a44;color:#94a3b8;border-radius:10px;padding:6px 14px;cursor:pointer;font-size:12.5px;font-family:inherit;">登出</button>
+      <ng-container *ngIf="auth.isLoggedIn; else loginBtn">
+        <span style="font-size:12.5px;color:#64748b;">{{auth.name}} ({{auth.isTeacher ? '老師' : '學生'}})</span>
+        <button (click)="logout()" style="background:transparent;border:1px solid #1e2a44;color:#94a3b8;border-radius:10px;padding:6px 14px;cursor:pointer;font-size:12.5px;font-family:inherit;">登出</button>
+      </ng-container>
+      <ng-template #loginBtn>
+        <button (click)="router.navigate(['/login'])" class="btn-primary" style="padding:6px 18px;font-size:13px;">登入</button>
+      </ng-template>
     </div>
   </header>
 

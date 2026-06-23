@@ -8,8 +8,8 @@ import { AuthGuard } from './guards/auth.guard';
 const routes: Routes = [
   { path: '', redirectTo: 'calendar', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
-  { path: 'calendar', component: CalendarComponent, canActivate: [AuthGuard] },
-  { path: 'day/:date', component: DayViewComponent, canActivate: [AuthGuard] },
+  { path: 'calendar', component: CalendarComponent },
+  { path: 'day/:date', component: DayViewComponent },
   { path: '**', redirectTo: 'calendar' }
 ];
 
